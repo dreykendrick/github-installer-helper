@@ -12,6 +12,7 @@ import Users from "./pages/Users";
 import Applications from "./pages/Applications";
 import Orders from "./pages/Orders";
 import Withdrawals from "./pages/Withdrawals";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/applications" element={<Applications />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/withdrawals" element={<Withdrawals />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
