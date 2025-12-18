@@ -14,6 +14,140 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_clicks: {
+        Row: {
+          affiliate_link_id: string
+          clicked_at: string | null
+          id: string
+          ip_address: string | null
+          referrer: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          affiliate_link_id: string
+          clicked_at?: string | null
+          id?: string
+          ip_address?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          affiliate_link_id?: string
+          clicked_at?: string | null
+          id?: string
+          ip_address?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_clicks_affiliate_link_id_fkey"
+            columns: ["affiliate_link_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_commissions: {
+        Row: {
+          affiliate_id: string
+          amount: number
+          created_at: string | null
+          id: string
+          order_item_id: string
+          paid_at: string | null
+          status: string | null
+        }
+        Insert: {
+          affiliate_id: string
+          amount: number
+          created_at?: string | null
+          id?: string
+          order_item_id: string
+          paid_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          affiliate_id?: string
+          amount?: number
+          created_at?: string | null
+          id?: string
+          order_item_id?: string
+          paid_at?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_commissions_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_commissions_order_item_id_fkey"
+            columns: ["order_item_id"]
+            isOneToOne: false
+            referencedRelation: "order_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_links: {
+        Row: {
+          affiliate_id: string
+          clicks: number | null
+          conversions: number | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          link_code: string
+          product_id: string
+          total_earned: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          affiliate_id: string
+          clicks?: number | null
+          conversions?: number | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          link_code: string
+          product_id: string
+          total_earned?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          affiliate_id?: string
+          clicks?: number | null
+          conversions?: number | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          link_code?: string
+          product_id?: string
+          total_earned?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_links_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_links_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       applications: {
         Row: {
           business_name: string | null
@@ -56,10 +190,69 @@ export type Database = {
         }
         Relationships: []
       }
+      order_items: {
+        Row: {
+          affiliate_link_id: string | null
+          commission_amount: number
+          commission_rate: number
+          created_at: string | null
+          id: string
+          order_id: string
+          product_id: string
+          quantity: number
+          unit_price: number
+        }
+        Insert: {
+          affiliate_link_id?: string | null
+          commission_amount: number
+          commission_rate: number
+          created_at?: string | null
+          id?: string
+          order_id: string
+          product_id: string
+          quantity?: number
+          unit_price: number
+        }
+        Update: {
+          affiliate_link_id?: string | null
+          commission_amount?: number
+          commission_rate?: number
+          created_at?: string | null
+          id?: string
+          order_id?: string
+          product_id?: string
+          quantity?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_affiliate_link_id_fkey"
+            columns: ["affiliate_link_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_links"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           created_at: string | null
           customer_email: string | null
+          customer_id: string | null
           customer_name: string | null
           id: string
           status: string | null
@@ -69,6 +262,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           customer_email?: string | null
+          customer_id?: string | null
           customer_name?: string | null
           id?: string
           status?: string | null
@@ -78,13 +272,22 @@ export type Database = {
         Update: {
           created_at?: string | null
           customer_email?: string | null
+          customer_id?: string | null
           customer_name?: string | null
           id?: string
           status?: string | null
           total_amount?: number
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       products: {
         Row: {
@@ -94,9 +297,11 @@ export type Database = {
           description: string | null
           id: string
           image_url: string | null
+          is_featured: boolean | null
           price: number
           sales: number | null
           status: string | null
+          stock_quantity: number | null
           title: string
           updated_at: string | null
           vendor_id: string | null
@@ -108,9 +313,11 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
+          is_featured?: boolean | null
           price?: number
           sales?: number | null
           status?: string | null
+          stock_quantity?: number | null
           title: string
           updated_at?: string | null
           vendor_id?: string | null
@@ -122,9 +329,11 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
+          is_featured?: boolean | null
           price?: number
           sales?: number | null
           status?: string | null
+          stock_quantity?: number | null
           title?: string
           updated_at?: string | null
           vendor_id?: string | null
@@ -133,6 +342,9 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
+          business_description: string | null
+          business_name: string | null
           created_at: string | null
           email: string | null
           full_name: string | null
@@ -143,6 +355,9 @@ export type Database = {
           wallet_balance: number | null
         }
         Insert: {
+          avatar_url?: string | null
+          business_description?: string | null
+          business_name?: string | null
           created_at?: string | null
           email?: string | null
           full_name?: string | null
@@ -153,6 +368,9 @@ export type Database = {
           wallet_balance?: number | null
         }
         Update: {
+          avatar_url?: string | null
+          business_description?: string | null
+          business_name?: string | null
           created_at?: string | null
           email?: string | null
           full_name?: string | null
@@ -187,9 +405,14 @@ export type Database = {
       }
       withdrawals: {
         Row: {
+          account_name: string | null
+          account_number: string | null
           amount: number
+          bank_name: string | null
           created_at: string | null
           id: string
+          mobile_number: string | null
+          mobile_provider: string | null
           payment_details: string | null
           payment_method: string | null
           status: string | null
@@ -197,9 +420,14 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          account_name?: string | null
+          account_number?: string | null
           amount: number
+          bank_name?: string | null
           created_at?: string | null
           id?: string
+          mobile_number?: string | null
+          mobile_provider?: string | null
           payment_details?: string | null
           payment_method?: string | null
           status?: string | null
@@ -207,9 +435,14 @@ export type Database = {
           user_id: string
         }
         Update: {
+          account_name?: string | null
+          account_number?: string | null
           amount?: number
+          bank_name?: string | null
           created_at?: string | null
           id?: string
+          mobile_number?: string | null
+          mobile_provider?: string | null
           payment_details?: string | null
           payment_method?: string | null
           status?: string | null
@@ -223,10 +456,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_affiliate_link_code: { Args: never; Returns: string }
       is_admin: { Args: { check_user_id: string }; Returns: boolean }
+      is_affiliate: { Args: { check_user_id: string }; Returns: boolean }
+      is_vendor: { Args: { check_user_id: string }; Returns: boolean }
     }
     Enums: {
-      app_role: "admin" | "vendor" | "affiliate"
+      app_role: "admin" | "vendor" | "affiliate" | "consumer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -354,7 +590,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "vendor", "affiliate"],
+      app_role: ["admin", "vendor", "affiliate", "consumer"],
     },
   },
 } as const
