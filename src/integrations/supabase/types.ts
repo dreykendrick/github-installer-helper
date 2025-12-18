@@ -347,10 +347,18 @@ export type Database = {
           business_name: string | null
           created_at: string | null
           email: string | null
+          email_code_expires_at: string | null
+          email_verification_code: string | null
+          email_verified: boolean | null
           full_name: string | null
           id: string
+          image_verified: boolean | null
           phone: string | null
+          phone_code_expires_at: string | null
+          phone_verification_code: string | null
+          phone_verified: boolean | null
           updated_at: string | null
+          verification_image_url: string | null
           verification_status: string | null
           wallet_balance: number | null
         }
@@ -360,10 +368,18 @@ export type Database = {
           business_name?: string | null
           created_at?: string | null
           email?: string | null
+          email_code_expires_at?: string | null
+          email_verification_code?: string | null
+          email_verified?: boolean | null
           full_name?: string | null
           id: string
+          image_verified?: boolean | null
           phone?: string | null
+          phone_code_expires_at?: string | null
+          phone_verification_code?: string | null
+          phone_verified?: boolean | null
           updated_at?: string | null
+          verification_image_url?: string | null
           verification_status?: string | null
           wallet_balance?: number | null
         }
@@ -373,10 +389,18 @@ export type Database = {
           business_name?: string | null
           created_at?: string | null
           email?: string | null
+          email_code_expires_at?: string | null
+          email_verification_code?: string | null
+          email_verified?: boolean | null
           full_name?: string | null
           id?: string
+          image_verified?: boolean | null
           phone?: string | null
+          phone_code_expires_at?: string | null
+          phone_verification_code?: string | null
+          phone_verified?: boolean | null
           updated_at?: string | null
+          verification_image_url?: string | null
           verification_status?: string | null
           wallet_balance?: number | null
         }
