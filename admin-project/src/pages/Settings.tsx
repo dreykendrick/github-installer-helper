@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Settings as SettingsIcon, Shield, Bell, Wallet, Store } from 'lucide-react';
 
 const Settings = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, isAdmin } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -27,10 +27,12 @@ const Settings = () => {
   });
 
   useEffect(() => {
-    if (!loading && !user) {
-      navigate('/login');
+    if (!loading) {
+      if (!user || !isAdmin) {
+        navigate('/login');
+      }
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, isAdmin, navigate]);
 
   const handleSave = () => {
     // In a real app, this would save to the database

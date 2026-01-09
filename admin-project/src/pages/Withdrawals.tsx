@@ -25,7 +25,7 @@ interface Profile {
 }
 
 const Withdrawals = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, isAdmin } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
@@ -33,10 +33,12 @@ const Withdrawals = () => {
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending');
 
   useEffect(() => {
-    if (!loading && !user) {
-      navigate('/login');
+    if (!loading) {
+      if (!user || !isAdmin) {
+        navigate('/login');
+      }
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, isAdmin, navigate]);
 
   useEffect(() => {
     if (user) {

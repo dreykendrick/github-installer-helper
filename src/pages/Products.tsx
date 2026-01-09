@@ -20,17 +20,19 @@ interface Product {
 }
 
 const Products = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, isAdmin } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
 
   useEffect(() => {
-    if (!loading && !user) {
-      navigate('/login');
+    if (!loading) {
+      if (!user || !isAdmin) {
+        navigate('/login');
+      }
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, isAdmin, navigate]);
 
   useEffect(() => {
     if (user) {

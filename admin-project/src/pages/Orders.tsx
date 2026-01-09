@@ -15,15 +15,17 @@ interface Order {
 }
 
 const Orders = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
-    if (!loading && !user) {
-      navigate('/login');
+    if (!loading) {
+      if (!user || !isAdmin) {
+        navigate('/login');
+      }
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, isAdmin, navigate]);
 
   useEffect(() => {
     if (user) {

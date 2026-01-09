@@ -170,6 +170,25 @@ export const AddProductModal = ({ isOpen, onClose, onProductAdded }: AddProductM
           description: 'Please log in to add products',
           variant: 'destructive'
         });
+        setIsLoading(false);
+        return;
+      }
+
+      // Check if user has vendor role
+      const { data: roleData, error: roleError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'vendor')
+        .maybeSingle();
+
+      if (roleError || !roleData) {
+        toast({
+          title: 'Not authorized',
+          description: 'You need to be an approved vendor to add products. Please apply for vendor access first.',
+          variant: 'destructive'
+        });
+        setIsLoading(false);
         return;
       }
 
