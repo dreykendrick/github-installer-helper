@@ -6,7 +6,10 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  userRole: 'vendor' | 'affiliate' | null;
+  userRole: 'vendor' | 'affiliate' | 'admin' | null;
+  isAdmin: boolean;
+  isVendor: boolean;
+  isAffiliate: boolean;
   signOut: () => Promise<void>;
 }
 
@@ -16,7 +19,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [userRole, setUserRole] = useState<'vendor' | 'affiliate' | null>(null);
+  const [userRole, setUserRole] = useState<'vendor' | 'affiliate' | 'admin' | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isVendor, setIsVendor] = useState(false);
+  const [isAffiliate, setIsAffiliate] = useState(false);
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -28,10 +34,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // Defer role fetching with setTimeout to prevent deadlock
         if (session?.user) {
           setTimeout(() => {
-            fetchUserRole(session.user.id);
+            fetchUserRoles(session.user.id);
           }, 0);
         } else {
-          setUserRole(null);
+          resetRoles();
         }
         
         setLoading(false);
@@ -44,7 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        fetchUserRole(session.user.id);
+        fetchUserRoles(session.user.id);
       }
       
       setLoading(false);
@@ -53,22 +59,42 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const fetchUserRole = async (userId: string) => {
+  const resetRoles = () => {
+    setUserRole(null);
+    setIsAdmin(false);
+    setIsVendor(false);
+    setIsAffiliate(false);
+  };
+
+  const fetchUserRoles = async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
-        .eq('user_id', userId)
-        .single();
+        .eq('user_id', userId);
 
       if (error) {
-        console.error('Error fetching user role:', error);
+        console.error('Error fetching user roles:', error);
         return;
       }
 
-      setUserRole(data?.role as 'vendor' | 'affiliate' | null);
+      const roles = data?.map(r => r.role) || [];
+      setIsAdmin(roles.includes('admin'));
+      setIsVendor(roles.includes('vendor'));
+      setIsAffiliate(roles.includes('affiliate'));
+      
+      // Set primary role for backward compatibility
+      if (roles.includes('admin')) {
+        setUserRole('admin');
+      } else if (roles.includes('vendor')) {
+        setUserRole('vendor');
+      } else if (roles.includes('affiliate')) {
+        setUserRole('affiliate');
+      } else {
+        setUserRole(null);
+      }
     } catch (error) {
-      console.error('Error fetching user role:', error);
+      console.error('Error fetching user roles:', error);
     }
   };
 
@@ -76,11 +102,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await supabase.auth.signOut();
     setUser(null);
     setSession(null);
-    setUserRole(null);
+    resetRoles();
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, userRole, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, userRole, isAdmin, isVendor, isAffiliate, signOut }}>
       {children}
     </AuthContext.Provider>
   );

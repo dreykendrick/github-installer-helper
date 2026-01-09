@@ -40,17 +40,19 @@ interface VerificationDialog {
 }
 
 const Users = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [roles, setRoles] = useState<Record<string, string[]>>({});
   const [verificationDialog, setVerificationDialog] = useState<VerificationDialog>({ type: null, profile: null });
 
   useEffect(() => {
-    if (!loading && !user) {
-      navigate('/login');
+    if (!loading) {
+      if (!user || !isAdmin) {
+        navigate('/login');
+      }
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, isAdmin, navigate]);
 
   useEffect(() => {
     if (user) {

@@ -13,7 +13,7 @@ interface Profile {
   phone: string;
   email_verified: boolean;
   phone_verified: boolean;
-  photo_verified: boolean;
+  image_verified: boolean;
   verification_status: string;
   wallet_balance: number;
   created_at: string;
@@ -25,16 +25,18 @@ interface UserRole {
 }
 
 const Users = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [userRoles, setUserRoles] = useState<Record<string, string[]>>({});
 
   useEffect(() => {
-    if (!loading && !user) {
-      navigate('/login');
+    if (!loading) {
+      if (!user || !isAdmin) {
+        navigate('/login');
+      }
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, isAdmin, navigate]);
 
   useEffect(() => {
     if (user) {
@@ -139,7 +141,7 @@ const Users = () => {
                         </div>
                         <div className="flex items-center gap-1" title="Photo ID">
                           <Camera className="w-4 h-4 text-muted-foreground" />
-                          <VerificationIcon verified={profile.photo_verified} />
+                          <VerificationIcon verified={profile.image_verified} />
                         </div>
                       </div>
                     </td>
