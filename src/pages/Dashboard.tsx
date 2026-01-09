@@ -1,67 +1,29 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
-import { AdminLayout } from '@/components/layout/AdminLayout';
-import { AdminStatsCard } from '@/components/admin/AdminStatsCard';
-import { Package, Users, ShoppingCart, Wallet, Clock, CheckCircle } from 'lucide-react';
-
-interface DashboardStats {
-  totalProducts: number;
-  pendingProducts: number;
-  totalUsers: number;
-  totalOrders: number;
-  pendingWithdrawals: number;
-  pendingApplications: number;
-}
 
 const Dashboard = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, isAdmin, isVendor, isAffiliate, userRole } = useAuth();
   const navigate = useNavigate();
-  const [stats, setStats] = useState<DashboardStats>({
-    totalProducts: 0,
-    pendingProducts: 0,
-    totalUsers: 0,
-    totalOrders: 0,
-    pendingWithdrawals: 0,
-    pendingApplications: 0,
-  });
 
   useEffect(() => {
-    if (!loading && !user) {
-      navigate('/login');
+    if (!loading) {
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+      
+      // Redirect to role-specific dashboard
+      if (isVendor) {
+        navigate('/vendor', { replace: true });
+      } else if (isAffiliate) {
+        navigate('/affiliate', { replace: true });
+      } else if (isAdmin) {
+        navigate('/admin', { replace: true });
+      }
+      // If no role, stay on this page and show role application options
     }
-  }, [user, loading, navigate]);
-
-  useEffect(() => {
-    if (user) {
-      fetchStats();
-    }
-  }, [user]);
-
-  const fetchStats = async () => {
-    try {
-      const [products, pendingProducts, profiles, orders, withdrawals, applications] = await Promise.all([
-        supabase.from('products').select('id', { count: 'exact', head: true }),
-        supabase.from('products').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
-        supabase.from('profiles').select('id', { count: 'exact', head: true }),
-        supabase.from('orders').select('id', { count: 'exact', head: true }),
-        supabase.from('withdrawals').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
-        supabase.from('applications').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
-      ]);
-
-      setStats({
-        totalProducts: products.count || 0,
-        pendingProducts: pendingProducts.count || 0,
-        totalUsers: profiles.count || 0,
-        totalOrders: orders.count || 0,
-        pendingWithdrawals: withdrawals.count || 0,
-        pendingApplications: applications.count || 0,
-      });
-    } catch (error) {
-      console.error('Error fetching stats:', error);
-    }
-  };
+  }, [user, loading, isAdmin, isVendor, isAffiliate, navigate]);
 
   if (loading) {
     return (
@@ -71,57 +33,33 @@ const Dashboard = () => {
     );
   }
 
-  return (
-    <AdminLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground">Overview of your platform</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <AdminStatsCard
-            title="Total Products"
-            value={stats.totalProducts}
-            icon={Package}
-            description="All products in the system"
-          />
-          <AdminStatsCard
-            title="Pending Products"
-            value={stats.pendingProducts}
-            icon={Clock}
-            description="Awaiting approval"
-            variant="warning"
-          />
-          <AdminStatsCard
-            title="Total Users"
-            value={stats.totalUsers}
-            icon={Users}
-            description="Registered users"
-          />
-          <AdminStatsCard
-            title="Total Orders"
-            value={stats.totalOrders}
-            icon={ShoppingCart}
-            description="All orders placed"
-          />
-          <AdminStatsCard
-            title="Pending Withdrawals"
-            value={stats.pendingWithdrawals}
-            icon={Wallet}
-            description="Awaiting processing"
-            variant="warning"
-          />
-          <AdminStatsCard
-            title="Pending Applications"
-            value={stats.pendingApplications}
-            icon={CheckCircle}
-            description="Role applications"
-            variant="warning"
-          />
+  // If user has no role, show options to apply
+  if (!userRole) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="max-w-md w-full text-center space-y-6">
+          <h1 className="text-3xl font-bold text-foreground">Welcome!</h1>
+          <p className="text-muted-foreground">
+            To get started, apply for a vendor or affiliate role.
+          </p>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => navigate('/applications')}
+              className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 transition-opacity"
+            >
+              Apply for Access
+            </button>
+          </div>
         </div>
       </div>
-    </AdminLayout>
+    );
+  }
+
+  // Loading redirect
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>
   );
 };
 
