@@ -7,6 +7,9 @@ import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import LoginPage from "./pages/LoginPage";
 import Dashboard from "./pages/Dashboard";
+import VendorDashboard from "./pages/VendorDashboard";
+import AffiliateDashboard from "./pages/AffiliateDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 import Products from "./pages/Products";
 import Users from "./pages/Users";
 import Applications from "./pages/Applications";
@@ -28,6 +31,9 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/vendor" element={<VendorDashboard />} />
+            <Route path="/affiliate" element={<AffiliateDashboard />} />
+            <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/products" element={<Products />} />
             <Route path="/users" element={<Users />} />
             <Route path="/applications" element={<Applications />} />
