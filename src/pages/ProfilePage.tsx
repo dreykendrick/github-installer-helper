@@ -298,31 +298,39 @@ const ProfilePage = () => {
             {/* Upload button - show if not verified or if rejected */}
             {(!profile?.image_verified) && (
               <div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                />
-                <Button 
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploading}
-                  className="w-full"
-                  variant={profile?.verification_image_url ? 'outline' : 'default'}
+                <Label 
+                  htmlFor="verification-upload"
+                  className="block w-full cursor-pointer"
                 >
-                  {isUploading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Uploading...
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="w-4 h-4 mr-2" />
-                      {profile?.verification_image_url ? 'Upload New Document' : 'Upload Verification Document'}
-                    </>
-                  )}
-                </Button>
+                  <input
+                    id="verification-upload"
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleFileSelect}
+                    className="sr-only"
+                  />
+                  <div 
+                    className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-md font-medium transition-colors ${
+                      profile?.verification_image_url 
+                        ? 'border border-input bg-background hover:bg-accent hover:text-accent-foreground' 
+                        : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                    } ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    {isUploading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Uploading...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4" />
+                        {profile?.verification_image_url ? 'Upload New Document' : 'Upload Verification Document'}
+                      </>
+                    )}
+                  </div>
+                </Label>
                 <p className="text-xs text-muted-foreground mt-2 text-center">
                   Accepted: JPG, PNG (max 5MB). Must be a clear photo of your government-issued ID.
                 </p>
