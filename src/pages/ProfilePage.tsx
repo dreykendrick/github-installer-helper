@@ -60,9 +60,8 @@ const ProfilePage = () => {
     setIsLoading(false);
   };
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
+  const uploadFile = async (file: File) => {
+    if (!user) return;
 
     // Validate file
     if (!file.type.startsWith('image/')) {
@@ -87,7 +86,7 @@ const ProfilePage = () => {
 
     try {
       // Upload to storage
-      const fileExt = file.name.split('.').pop();
+      const fileExt = file.name.split('.').pop() || 'jpg';
       const fileName = `${user.id}/${Date.now()}.${fileExt}`;
       
       const { error: uploadError } = await supabase.storage
@@ -131,6 +130,22 @@ const ProfilePage = () => {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      uploadFile(file);
+    }
+  };
+
+  // Fallback for mobile browsers that don't trigger onChange properly
+  const handleInputEvent = (e: React.FormEvent<HTMLInputElement>) => {
+    const input = e.currentTarget;
+    const file = input.files?.[0];
+    if (file && !isUploading) {
+      uploadFile(file);
     }
   };
 
@@ -307,9 +322,23 @@ const ProfilePage = () => {
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
-                    capture="environment"
                     onChange={handleFileSelect}
-                    className="sr-only"
+                    onInput={handleInputEvent}
+                    onClick={(e) => {
+                      // Reset value to allow re-selecting the same file
+                      (e.target as HTMLInputElement).value = '';
+                    }}
+                    style={{ 
+                      position: 'absolute',
+                      width: '1px',
+                      height: '1px',
+                      padding: 0,
+                      margin: '-1px',
+                      overflow: 'hidden',
+                      clip: 'rect(0, 0, 0, 0)',
+                      whiteSpace: 'nowrap',
+                      border: 0
+                    }}
                   />
                   <div 
                     className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-md font-medium transition-colors ${
