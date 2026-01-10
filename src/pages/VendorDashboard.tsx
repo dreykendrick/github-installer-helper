@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Package, Plus, TrendingUp, DollarSign, Eye, Clock, LogOut } from 'lucide-react';
+import { Package, Plus, TrendingUp, DollarSign, Eye, Clock, LogOut, User } from 'lucide-react';
 import { AddProductModal } from '@/components/dashboard/AddProductModal';
 import { formatCurrency } from '@/utils/currency';
 
@@ -126,6 +126,9 @@ const VendorDashboard = () => {
             <Button onClick={() => setShowAddModal(true)} className="bg-gradient-primary">
               <Plus className="w-4 h-4 mr-2" />
               Add Product
+            </Button>
+            <Button variant="outline" size="icon" onClick={() => navigate('/profile')}>
+              <User className="w-4 h-4" />
             </Button>
             <Button variant="outline" size="icon" onClick={handleSignOut}>
               <LogOut className="w-4 h-4" />

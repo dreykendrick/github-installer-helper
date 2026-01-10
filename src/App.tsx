@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import VendorDashboard from "./pages/VendorDashboard";
 import AffiliateDashboard from "./pages/AffiliateDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import ProfilePage from "./pages/ProfilePage";
 import Products from "./pages/Products";
 import Users from "./pages/Users";
 import Applications from "./pages/Applications";
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/vendor" element={<VendorDashboard />} />
             <Route path="/affiliate" element={<AffiliateDashboard />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/products" element={<Products />} />
             <Route path="/users" element={<Users />} />
             <Route path="/applications" element={<Applications />} />

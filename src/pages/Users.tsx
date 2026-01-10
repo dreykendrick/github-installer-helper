@@ -104,9 +104,16 @@ const Users = () => {
       return;
     }
 
+    // Build update object - for image verification, also update verification_status
+    const updateData: Record<string, any> = { [field]: newValue };
+    
+    if (verificationDialog.type === 'image') {
+      updateData.verification_status = approve ? 'approved' : 'rejected';
+    }
+
     const { error } = await supabase
       .from('profiles')
-      .update({ [field]: newValue })
+      .update(updateData)
       .eq('id', verificationDialog.profile.id);
 
     if (error) {
