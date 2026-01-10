@@ -44,9 +44,8 @@ export const AddProductModal = ({ isOpen, onClose, onProductAdded }: AddProductM
     image_urls: [] as string[]
   });
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+  const processFiles = async (files: FileList) => {
+    if (files.length === 0) return;
 
     const remainingSlots = MAX_IMAGES - imagePreviews.length;
     if (remainingSlots <= 0) {
@@ -96,7 +95,7 @@ export const AddProductModal = ({ isOpen, onClose, onProductAdded }: AddProductM
 
     // Upload all images in parallel
     const uploadPromises = validFiles.map(async (file) => {
-      const fileExt = file.name.split('.').pop();
+      const fileExt = file.name.split('.').pop() || 'jpg';
       const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
       const { error } = await supabase.storage
@@ -136,6 +135,22 @@ export const AddProductModal = ({ isOpen, onClose, onProductAdded }: AddProductM
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+    }
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      processFiles(files);
+    }
+  };
+
+  // Fallback for mobile browsers that don't trigger onChange properly
+  const handleInputEvent = (e: React.FormEvent<HTMLInputElement>) => {
+    const input = e.currentTarget;
+    const files = input.files;
+    if (files && files.length > 0 && !isUploading) {
+      processFiles(files);
     }
   };
 
@@ -260,9 +275,24 @@ export const AddProductModal = ({ isOpen, onClose, onProductAdded }: AddProductM
               ref={fileInputRef}
               type="file"
               accept="image/*"
-              capture="environment"
+              multiple
               onChange={handleImageUpload}
-              className="sr-only"
+              onInput={handleInputEvent}
+              onClick={(e) => {
+                // Reset value to allow re-selecting the same file
+                (e.target as HTMLInputElement).value = '';
+              }}
+              style={{ 
+                position: 'absolute',
+                width: '1px',
+                height: '1px',
+                padding: 0,
+                margin: '-1px',
+                overflow: 'hidden',
+                clip: 'rect(0, 0, 0, 0)',
+                whiteSpace: 'nowrap',
+                border: 0
+              }}
             />
             
             <div className="grid grid-cols-3 gap-3">
