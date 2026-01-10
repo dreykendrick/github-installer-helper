@@ -254,14 +254,15 @@ export const AddProductModal = ({ isOpen, onClose, onProductAdded }: AddProductM
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
           {/* Image Upload Section */}
           <div className="space-y-2">
-            <Label>Product Images ({imagePreviews.length}/{MAX_IMAGES})</Label>
+            <Label htmlFor="product-images">Product Images ({imagePreviews.length}/{MAX_IMAGES})</Label>
             <input
+              id="product-images"
               ref={fileInputRef}
               type="file"
               accept="image/*"
-              multiple
+              capture="environment"
               onChange={handleImageUpload}
-              className="hidden"
+              className="sr-only"
             />
             
             <div className="grid grid-cols-3 gap-3">
@@ -275,7 +276,7 @@ export const AddProductModal = ({ isOpen, onClose, onProductAdded }: AddProductM
                   <button
                     type="button"
                     onClick={() => removeImage(index)}
-                    className="absolute top-1 right-1 p-1.5 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-1 right-1 p-1.5 bg-destructive text-destructive-foreground rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                   >
                     <Trash2 className="w-3 h-3" />
                   </button>
@@ -288,11 +289,9 @@ export const AddProductModal = ({ isOpen, onClose, onProductAdded }: AddProductM
               ))}
               
               {imagePreviews.length < MAX_IMAGES && (
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploading}
-                  className="aspect-square border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-2 hover:border-primary/50 hover:bg-secondary/30 transition-all duration-200"
+                <label
+                  htmlFor="product-images"
+                  className={`aspect-square border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-2 hover:border-primary/50 hover:bg-secondary/30 transition-all duration-200 cursor-pointer ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {isUploading ? (
                     <Loader2 className="w-6 h-6 text-muted-foreground animate-spin" />
@@ -302,16 +301,14 @@ export const AddProductModal = ({ isOpen, onClose, onProductAdded }: AddProductM
                       <span className="text-xs text-muted-foreground">Add</span>
                     </>
                   )}
-                </button>
+                </label>
               )}
             </div>
             
             {imagePreviews.length === 0 && (
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading}
-                className="w-full h-32 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-3 hover:border-primary/50 hover:bg-secondary/30 transition-all duration-200"
+              <label
+                htmlFor="product-images"
+                className={`w-full h-32 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-3 hover:border-primary/50 hover:bg-secondary/30 transition-all duration-200 cursor-pointer ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {isUploading ? (
                   <>
@@ -324,12 +321,12 @@ export const AddProductModal = ({ isOpen, onClose, onProductAdded }: AddProductM
                       <ImagePlus className="w-6 h-6 text-muted-foreground" />
                     </div>
                     <div className="text-center">
-                      <span className="text-sm font-medium text-foreground">Click to upload images</span>
+                      <span className="text-sm font-medium text-foreground">Tap to upload images</span>
                       <p className="text-xs text-muted-foreground mt-1">Up to {MAX_IMAGES} images, PNG/JPG, max 5MB each</p>
                     </div>
                   </>
                 )}
-              </button>
+              </label>
             )}
           </div>
 
